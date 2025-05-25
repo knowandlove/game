@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality Islands Adventure</title>
+    <style>
+        /* Embedded CSS to avoid file loading issues */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #game-container {
+            position: relative;
+            border: 3px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: #000;
+        }
+        #game-canvas {
+            display: block;
+            background: #87CEEB;
+        }
+        #debug-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+        #loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+        }
+        #loading-bar {
+            width: 300px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        #loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="debug-info"></div>
+        <div id="loading-screen">
+            <h2>Loading Adventure...</h2>
+            <div id="loading-bar">
+                <div id="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load external scripts in dependency order -->
+    <script src="js/config/settings.js"></script>
+    <script src="js/utils/debug.js"></script>
+    <script src="js/input/KeyboardInput.js"></script>
+    <script src="js/core/AssetLoader.js"></script>
+    <script src="js/audio/AudioManager.js"></script>
+    <script src="js/core/StateManager.js"></script>
+    <script src="js/screens/WorldSelect.js"></script>
+
+    <!-- Inline the remaining code for now -->
+    <script>
+        // Main Game Class
+        class Game {
+            constructor() {
+                this.canvas = null;
+                this.ctx = null;
+                this.stateManager = new StateManager();
+                this.isRunning = false;
+                this.lastTime = 0;
+                this.assetsLoaded = false;
+                this.audioInitialized = false;
+                Debug.log('Game instance created');
+            }
+            
+            async start() {
+                try {
+                    Debug.log('Starting game...');
+                    this.setupCanvas();
+                    this.setupInput();
+                    this.registerStates();
+                    this.setupUserInteraction();
+                    await this.loadAssets();
+                    this.isRunning = true;
+                    this.gameLoop();
+                    Debug.log('Game started successfully');
+                } catch (error) {
+                    console.error('Game failed to start:', error);
+                }
+            }
+            
+            setupInput() {
+                KeyboardInput.initialize();
+                Debug.log('Input systems initialized');
+            }
+            
+            async loadAssets() {
+                try {
+                    await AssetLoader.loadAllAssets();
+                    this.assetsLoaded = true;
+                    setTimeout(() => {
+                        this.showClickToContinue();
+                    }, 500);
+                } catch (error) {
+                    Debug.log('Asset loading failed:', error);
+                }
+            }
+            
+            showClickToContinue() {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.innerHTML = `
+                        <h2>Click anywhere to start!</h2>
+                        <p style="font-size: 16px; margin-top: 20px;">
+                            (This enables audio and starts the game)
+                        </p>
+                    `;
+                }
+            }
+            
+            setupUserInteraction() {
+                const handleFirstClick = async () => {
+                    Debug.log('User interaction detected');
+                    if (!this.audioInitialized) {
+                        await AudioManager.initialize();
+                        this.audioInitialized = true;
+                        AudioManager.playSound('test-beep');
+                    } else {
+                        await AudioManager.resumeContext();
+                    }
+                    this.hideLoadingScreen();
+                    this.stateManager.changeState(GAME_CONFIG.STATES.WORLD_SELECT);
+                    
+                    // Remove this event listener
+                    document.removeEventListener('click', handleFirstClick);
+                };
+                
+                document.addEventListener('click', handleFirstClick);
+            }
+            
+            setupCanvas() {
+                this.canvas = document.getElementById('game-canvas');
+                this.canvas.width = GAME_CONFIG.CANVAS_WIDTH;
+                this.canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
+                this.ctx = this.canvas.getContext('2d');
+                this.ctx.imageSmoothingEnabled = false;
+                Debug.log(`Canvas setup: ${this.canvas.width}x${this.canvas.height}`);
+            }
+            
+            registerStates() {
+                this.stateManager.registerState(GAME_CONFIG.STATES.LOADING, {
+                    render: (ctx) => {},
+                    update: (deltaTime) => {} 
+                });
+
+                this.stateManager.registerState(GAME_CONFIG.STATES.WORLD_SELECT, {
+                    enter: () => WorldSelectScreen.enter(),
+                    update: (deltaTime) => WorldSelectScreen.update(deltaTime),
+                    render: (ctx) => WorldSelectScreen.render(ctx),
+                    exit: () => WorldSelectScreen.exit()
+                });
+            }
+            
+            hideLoadingScreen() {
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                }
+            }
+            
+            gameLoop(currentTime = 0) {
+                if (!this.isRunning) return;
+                const deltaTime = currentTime - this.lastTime;
+                this.lastTime = currentTime;
+                Debug.updateFPS(currentTime);
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.stateManager.update(deltaTime);
+                this.stateManager.render(this.ctx);
+                requestAnimationFrame((time) => this.gameLoop(time));
+            }
+        }
+
+        // Start the game when page loads
+        window.addEventListener('load', () => {
+            const game = new Game();
+            game.start();
+        });
+    </script>
+</body>
+</html>
