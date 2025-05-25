@@ -11,7 +11,7 @@ class StateManager {
         Debug.log(`State registered: ${stateName}`);
     }
     
-    changeState(newState) {
+    changeState(newState, data = null) {
         if (!this.states.has(newState)) {
             Debug.log(`Attempted to change to unregistered state: ${newState}`);
             return false;
@@ -29,10 +29,10 @@ class StateManager {
         const previousState = this.currentState;
         this.currentState = newState;
 
-        // Enter new state
+        // Enter new state with optional data
         const newStateHandler = this.states.get(newState);
         if (newStateHandler.enter) {
-            newStateHandler.enter(previousState);
+            newStateHandler.enter(data);
         }
 
         return true;

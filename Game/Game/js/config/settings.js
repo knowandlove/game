@@ -15,7 +15,8 @@ const GAME_CONFIG = {
         SKY_BLUE: '#87CEEB',
         GRASS_GREEN: '#90EE90',
         UI_BLACK: '#000000',
-        UI_WHITE: '#FFFFFF'
+        UI_WHITE: '#FFFFFF',
+        PLAYER_BLUE: '#4169E1'
     },
     ASSETS: {
         // Test assets for Phase 2 - Simplified working SVGs

@@ -95,7 +95,9 @@
     <script src="js/core/AssetLoader.js"></script>
     <script src="js/audio/AudioManager.js"></script>
     <script src="js/core/StateManager.js"></script>
+    <script src="js/data/worlds.js"></script>
     <script src="js/screens/WorldSelect.js"></script>
+    <script src="js/screens/WorldMap.js"></script>
 
     <!-- Inline the remaining code for now -->
     <script>
@@ -198,6 +200,13 @@
                     render: (ctx) => WorldSelectScreen.render(ctx),
                     exit: () => WorldSelectScreen.exit()
                 });
+
+                this.stateManager.registerState(GAME_CONFIG.STATES.WORLD_MAP, {
+                    enter: (worldNumber) => WorldMapScreen.enter(worldNumber),
+                    update: (deltaTime) => WorldMapScreen.update(deltaTime),
+                    render: (ctx) => WorldMapScreen.render(ctx),
+                    exit: () => WorldMapScreen.exit()
+                });
             }
             
             hideLoadingScreen() {
@@ -222,6 +231,7 @@
         // Start the game when page loads
         window.addEventListener('load', () => {
             const game = new Game();
+            window.game = game; // Make game accessible globally for state transitions
             game.start();
         });
     </script>

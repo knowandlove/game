@@ -72,9 +72,8 @@ const WorldSelectScreen = {
         Debug.log(`Selecting World ${worldNumber}!`);
         AudioManager.playSound('test-beep');
         
-        // TODO: Transition to world map
-        // For now, just log the selection
-        alert(`Selected World ${worldNumber}! (World map coming in Phase 4)`);
+        // Transition to world map
+        window.game?.stateManager?.changeState(GAME_CONFIG.STATES.WORLD_MAP, worldNumber);
     },
     
     render(ctx) {
