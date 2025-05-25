@@ -50,12 +50,12 @@ const Player = {
         this.x += this.velocityX;
         this.y += this.velocityY;
         
-        // World boundary checks - using explicit constants
+        // World boundary checks - only use world coordinates, not screen coordinates
         if (this.x < 0) {
             this.x = 0;
         }
         
-        // Right boundary uses WORLD_WIDTH, not canvas width (camera handles screen bounds)
+        // Right boundary uses WORLD_WIDTH - camera handles screen coordinate translation
         if (this.x + this.width > GAME_CONSTANTS.WORLD_WIDTH) {
             this.x = GAME_CONSTANTS.WORLD_WIDTH - this.width;
         }
