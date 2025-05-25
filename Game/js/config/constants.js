@@ -5,6 +5,27 @@ const GAME_CONSTANTS = {
     CANVAS_WIDTH: 1024,
     CANVAS_HEIGHT: 768,
     
+    // World & Level Settings
+    WORLD_WIDTH: 3000,
+    LEVEL_END_X: 3000 - 200, // Uses WORLD_WIDTH for consistency
+    CHIP_VALUE: 5, // Default drop amount for enemies
+    
+    // Physics & Movement
+    GRAVITY: 0.5,
+    JUMP_POWER: -10,
+    GAME_SPEED: 5,
+    
+    // Combat Settings
+    ENEMY_DAMAGE: 10,
+    INVINCIBILITY_DURATION: 1500,
+    PROJECTILE_SPEED: 10,
+    PROJECTILE_DAMAGE_BASE: 20,
+    PROJECTILE_DAMAGE_UPGRADED: 40,
+    PLAYER_SHOOT_COOLDOWN: 300,
+    
+    // Shop Settings
+    GUN_UPGRADE_COST: 50,
+    
     // Game States
     STATES: {
         LOADING: 'loading',
