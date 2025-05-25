@@ -74,6 +74,11 @@ class GameCore {
             window.WorldMapScreen.initialize(this.canvas.width, this.canvas.height);
         }
         
+        // Initialize level screen
+        if (window.LevelScreen && typeof window.LevelScreen.initialize === 'function') {
+            window.LevelScreen.initialize(this.canvas.width, this.canvas.height);
+        }
+        
         Debug.log('Dependent systems initialized');
     }
     
@@ -98,6 +103,13 @@ class GameCore {
             update: (deltaTime) => WorldMapScreen.update(deltaTime),
             render: (ctx) => WorldMapScreen.render(ctx),
             exit: () => WorldMapScreen.exit()
+        });
+        
+        this.stateManager.registerState(GAME_CONSTANTS.STATES.LEVEL, {
+            enter: (data) => LevelScreen.enter(data),
+            update: (deltaTime) => LevelScreen.update(deltaTime),
+            render: (ctx) => LevelScreen.render(ctx),
+            exit: () => LevelScreen.exit()
         });
         
         Debug.log('Game states registered');

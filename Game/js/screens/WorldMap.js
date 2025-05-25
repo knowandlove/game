@@ -120,7 +120,11 @@ const WorldMapScreen = {
         Debug.log(`Entering level: ${selectedLevelData.name}`);
         AudioManager.playSound('test-beep');
         
-        alert(`Entering ${selectedLevelData.name}! (Level gameplay coming in Phase 5)`);
+        // Transition to actual level gameplay
+        window.game?.stateManager?.changeState(GAME_CONSTANTS.STATES.LEVEL, {
+            world: this.currentWorld,
+            level: this.selectedLevel + 1
+        });
     },
     
     exitToWorldSelect() {
@@ -147,10 +151,10 @@ const WorldMapScreen = {
         
         ctx.fillStyle = GAME_CONSTANTS.COLORS.UI_WHITE;
         ctx.font = '16px Arial';
-        ctx.fillText('← → Navigate levels | Enter: Select | Esc: Back to World Select', this.canvasWidth / 2, this.canvasHeight - 30);
+        ctx.fillText('? ? Navigate levels | Enter: Select | Esc: Back to World Select', this.canvasWidth / 2, this.canvasHeight - 30);
         
         ctx.font = '14px Arial';
-        ctx.fillText(`✓ Phase 4.5 - Refactored Architecture! (World ${this.currentWorld})`, this.canvasWidth / 2, this.canvasHeight - 10);
+        ctx.fillText(`? Phase 4.5 - Refactored Architecture! (World ${this.currentWorld})`, this.canvasWidth / 2, this.canvasHeight - 10);
     },
     
     renderPaths(ctx, worldData) {
@@ -203,8 +207,8 @@ const WorldMapScreen = {
             
             if (!isUnlocked) {
                 ctx.fillStyle = GAME_CONSTANTS.COLORS.ERROR_RED;
-                ctx.font = '20px Arial';
-                ctx.fillText('🔒', level.x + 15, level.y - 15);
+                ctx.font = '12px Arial';
+                ctx.fillText('LOCKED', level.x, level.y - 15);
             }
         });
     },
