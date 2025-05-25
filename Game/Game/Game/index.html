@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality Islands Adventure</title>
+    <style>
+        /* Embedded CSS to avoid file loading issues */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #game-container {
+            position: relative;
+            border: 3px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: #000;
+        }
+        #game-canvas {
+            display: block;
+            background: #87CEEB;
+        }
+        #debug-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+        #loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+        }
+        #loading-bar {
+            width: 300px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        #loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="debug-info"></div>
+        <div id="loading-screen">
+            <h2>Loading Adventure...</h2>
+            <div id="loading-bar">
+                <div id="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load external scripts in proper dependency order -->
+    <script src="js/config/constants.js"></script>
+    <script src="js/config/settings.js"></script>
+    <script src="js/utils/debug.js"></script>
+    <script src="js/input/KeyboardInput.js"></script>
+    <script src="js/core/AssetLoader.js"></script>
+    <script src="js/audio/AudioManager.js"></script>
+    <script src="js/core/StateManager.js"></script>
+    <script src="js/data/worlds.js"></script>
+    <script src="js/screens/WorldSelect.js"></script>
+    <script src="js/screens/WorldMap.js"></script>
+    <script src="js/core/GameCore.js"></script>
+
+    <!-- Initialize Game -->
+    <script>
+        // Start the game when page loads - using new architecture
+        window.addEventListener('load', async () => {
+            const gameCore = new GameCore();
+            window.game = gameCore; // Make accessible globally for state transitions
+            await gameCore.start();
+        });
+    </script>
+</body>
+</html>
